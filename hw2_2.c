@@ -40,7 +40,7 @@ void p_snd (Pipe *self)
 
     close(self->fd_direct[0]);
     file_size = write(self->fd_direct[1], self->buf, self->len);
-    if(file_size != self->len)
+    if (file_size != self->len)
     {
         printf("Can't write all string\n");
         exit(-1);
@@ -55,7 +55,7 @@ void p_rcv (Pipe *self)
     close(self->fd_direct[1]);
     self->buf = (char*) realloc(self->buf, (self->len * sizeof(char)));
     file_size = read(self->fd_direct[0], self->buf, self->len);
-    if(file_size < 0)
+    if (file_size < 0)
     {
         printf("Can't read string\n");
         exit(-1);
@@ -69,7 +69,7 @@ void p_rd (Pipe *self, const char *file_name)
     int flag = 0;
 
     umask(0);
-    if((fd = open(file_name, O_RDONLY)) < 0)
+    if ((fd = open(file_name, O_RDONLY)) < 0)
     {
         printf("Can't open file \"%s\"\n", file_name);
         exit(-1);
@@ -77,12 +77,12 @@ void p_rd (Pipe *self, const char *file_name)
     self->len = FileSize(file_name); 
     self->buf = (char*) realloc(self->buf, (self->len * sizeof(char)));
     flag = read(fd, self->buf, self->len);
-    if(flag < 0)
+    if (flag < 0)
     {
         printf("Can't read file \"%s\"\n", file_name);
         exit(-1);
     }
-    if(close(fd) < 0)
+    if (close(fd) < 0)
     {
         printf("Can't close file \"%s\"\n", file_name);
         exit(-1);
@@ -95,18 +95,18 @@ void p_wr (Pipe *self, const char *file_name)
     size_t file_size = 0;
 
     umask(0);
-    if((fd = open(file_name, O_WRONLY | O_CREAT, 0777)) < 0)
+    if ((fd = open(file_name, O_WRONLY | O_CREAT | O_TRUNC, 0777)) < 0)
     {
         printf("Can't open file \"%s\"\n", file_name);
         exit(-1);
     }
     file_size = write(fd, self->buf, self->len);
-    if(file_size != self->len)
+    if (file_size != self->len)
     {
         printf("Can't write all string in file \"%s\"\n", file_name);
         exit(-1);
     }
-    if(close(fd) < 0)
+    if (close(fd) < 0)
     {
         printf("Can't close file \"%s\"", file_name);
         exit(-1);
@@ -115,7 +115,7 @@ void p_wr (Pipe *self, const char *file_name)
 
 void p_check (Pipe *self)
 {
-    if(pipe(self->fd_direct) < 0)
+    if (pipe(self->fd_direct) < 0)
     {
         printf("Can't create pipe\n");
         exit(-1);
@@ -127,17 +127,17 @@ size_t FileSize (const char* file_name)
     int fd;
     struct stat statbuf;
     umask(0);
-    if((fd = open(file_name, O_RDONLY)) < 0)
+    if ((fd = open(file_name, O_RDONLY)) < 0)
     {
         printf("Can't open file \"%s\"\n", file_name);
         exit(-1);
     }
-    if(fstat(fd, &statbuf) < 0)
+    if (fstat(fd, &statbuf) < 0)
     {
         printf("Problem with file \"%s\"\n", file_name);
         exit(-1);
     }
-    if(close(fd) < 0)
+    if (close(fd) < 0)
     {
         printf("Can't close file \"%s\"", file_name);
         exit(-1);
@@ -149,10 +149,10 @@ size_t FileSize (const char* file_name)
 Pipe ctorPipe ()
 {
     Pipe pipe;
-    pipe.actions.rcv = p_rcv;
-    pipe.actions.snd = p_snd;
-    pipe.actions.rd = p_rd;
-    pipe.actions.wr = p_wr;
+    pipe.actions.rcv   = p_rcv;
+    pipe.actions.snd   = p_snd;
+    pipe.actions.rd    = p_rd;
+    pipe.actions.wr    = p_wr;
     pipe.actions.check = p_check;
 
     return pipe;
@@ -170,12 +170,12 @@ int main()
     myPipe1.actions.check(&myPipe1);
     myPipe2.actions.check(&myPipe2);
     fork_status = fork();
-    if(fork_status < 0)
+    if (fork_status < 0)
     {
         printf("Can't make fork\n");
         exit(-1);
     }
-    else if(fork_status == 0)
+    else if (fork_status == 0)
     {
         printf("I am a child\n");
         myPipe1.actions.rcv(&myPipe1);
